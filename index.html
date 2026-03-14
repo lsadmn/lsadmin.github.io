@@ -11,7 +11,8 @@
     <script src="https://docs.getgrist.com/grist-plugin-api.js"></script>
 
     <script src="invoice.js?ver=11"></script>
-    <script src="exampleData.js"></script>
+<script src="invoice.js?ver=11"></script>
+<link rel="stylesheet" href="invoice.css?ver=17">
 
     <link rel="stylesheet" href="invoice.css?ver=17">
   </head>
@@ -42,17 +43,14 @@
               <div class="header">
                 <div class="meta title">ANNEX A – EQUIPMENT ISSUANCE</div>
               </div>
-              <div class="info"><span class="meta">Invoice Number</span> #{{ invoice.Number }}</div>
-              <div class="info" v-if="invoice.Issued"><div class="meta date-tag">Issued</div> {{ invoice.Issued | asDate }}</div>
-              <div class="info" v-if="invoice.Due"><div class="meta date-tag">Due</div> {{ invoice.Due | asDate }}</div>
-            </div>
             
 <div class="client">
-  <div class="title">Name</div>
+  <div class="title">NAME</div>
   <div class="details">
     {{ invoice["Full Name"] }}
   </div>
 </div>
+<br>
 
 <table class="items">
   <tr>
