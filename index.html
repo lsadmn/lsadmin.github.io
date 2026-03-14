@@ -100,32 +100,23 @@
             </div>
           </div>
 
-          <table class="items">
-            <template v-if="!Array.isArray(invoice.Items)">
-              <tr>
-                <th>Description</th>
-                <th class="money">Total</th>
-              </tr>
-              <tr>
-                <td>{{ invoice.Items }}</td>
-                <td class="money">{{ invoice.Total | currency }}</td>
-              </tr>
-            </template>
-            <template v-else>
-              <tr>
-                <th>Description</th>
-                <th class="money">Unit Price</th>
-                <th class="number">Quantity</th>
-                <th class="money">Total</th>
-              </tr>
-              <tr v-for="item in invoice.Items">
-                <td>{{ item.Description }}</td>
-                <td class="money">{{ item.Price | currency }}</td>
-                <td class="number">{{ item.Quantity }}</td>
-                <td class="money">{{ item.Total | currency }}</td>
-              </tr>
-            </template>
-          </table>
+<table class="items">
+  <tr>
+    <th>Description</th>
+    <th>Brand</th>
+    <th>Model</th>
+    <th>Serial</th>
+    <th>Assigned Date</th>
+  </tr>
+
+  <tr v-for="item in invoice.Items">
+    <td>{{ item.Description }}</td>
+    <td>{{ item.Brand }}</td>
+    <td>{{ item.Model }}</td>
+    <td>{{ item.Serial }}</td>
+    <td>{{ item["Assigned date"] }}</td>
+  </tr>
+</table>
 
           <div class="summary">
             <div class="part">
