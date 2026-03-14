@@ -118,25 +118,6 @@
   </tr>
 </table>
 
-          <div class="summary">
-            <div class="part">
-              <div class="title">Subtotal</div>
-              <div class="details">{{ invoice.Subtotal | currency }}</div>
-            </div>
-            <div class="part">
-              <div class="title">Deduction</div>
-              <div class="details">{{ invoice.Deduction | currency }}</div>
-            </div>
-            <div class="part">
-              <div class="title">Taxes</div>
-              <div class="details">{{ invoice.Taxes | currency }}</div>
-            </div>
-            <div class="total">
-              <div class="title">Total</div>
-              <div class="details">{{ invoice.Total | currency }}</div>
-            </div>
-          </div>
-
           <template v-if="invoice.Note">
             <p class="note">{{ invoice.Note }}</p>
           </template>
