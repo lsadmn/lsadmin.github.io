@@ -40,7 +40,7 @@
           <div class="top">
             <div class="block">
               <div class="header">
-                <div class="meta title">Invoice</div>
+                <div class="meta title">ANNEX A – EQUIPMENT ISSUANCE</div>
               </div>
               <div class="info"><span class="meta">Invoice Number</span> #{{ invoice.Number }}</div>
               <div class="info" v-if="invoice.Issued"><div class="meta date-tag">Issued</div> {{ invoice.Issued | asDate }}</div>
@@ -84,24 +84,6 @@
     {{ invoice["Full Name"] }}
   </div>
 </div>
-              <template v-if="typeof(business) === 'string'">
-                <div class="newlined">{{ business }}</div>
-              </template>
-              <template v-else>
-                <div>{{ business.Name }}</div>
-                <template v-if="business.Street1">
-                  {{ business.Street1 }},
-                </template>
-                <template v-if="business.Street2">
-                  {{ business.Street2 }},
-                </template>
-                {{ business.City }} {{ business.State }} {{ business.Zip }}
-                <template v-if="business.Country">
-                  <br />{{ business.Country }}
-                </template>
-              </template>
-            </div>
-          </div>
 
 <table class="items">
   <tr>
