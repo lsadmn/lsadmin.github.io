@@ -1,101 +1,108 @@
-/* GENERAL PAGE STYLE */
-
-body {
-  font-family: Arial, Helvetica, sans-serif;
-  margin: 0;
-  padding: 0;
+body{
+font-family: Arial, Helvetica, sans-serif;
+margin:0;
+padding:0;
 }
 
-/* DOCUMENT CONTAINER */
-
-.invoice {
-  width: 13in;
-  min-height: 8.5in;
-  margin: auto;
-  background: white;
-  color: black;
-  padding: 0.75in;
-  box-sizing: border-box;
+.form{
+width:8.5in;
+min-height:13in;
+margin:auto;
+padding:1in;
+box-sizing:border-box;
 }
 
-/* TITLE */
-
-.header .title {
-  font-size: 22px;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 20px;
+.title{
+text-align:center;
+font-weight:bold;
+font-size:18px;
+margin-bottom:5px;
 }
 
-.client {
-  margin-bottom: 25px;
+.subtitle{
+text-align:center;
+font-weight:bold;
+font-size:14px;
+margin-bottom:40px;
 }
 
-.client .title {
-  font-weight: bold;
+.employee{
+margin-bottom:20px;
+font-size:14px;
 }
 
-.client .details {
-  margin-top: 5px;
+.employee-name{
+margin-left:10px;
+border-bottom:1px solid black;
+padding:2px 100px 2px 10px;
 }
 
-/* TABLE STYLE */
-
-.items {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
+.statement{
+margin-bottom:20px;
+font-size:14px;
 }
 
-/* TABLE HEADER */
-
-.items th {
-  border: 1px solid black;
-  padding: 8px;
-  text-align: center;
-  font-weight: bold;
+.asset-table{
+width:100%;
+border-collapse:collapse;
+margin-top:10px;
+margin-bottom:80px;
 }
 
-/* TABLE CELLS */
-
-.items td {
-  border: 1px solid black;
-  padding: 8px;
-  text-align: left;
+.asset-table th,
+.asset-table td{
+border:1px solid black;
+padding:8px;
+font-size:13px;
+text-align:left;
 }
 
-/* SIGNATURE AREA */
-
-.signature {
-  margin-top: 60px;
+.asset-table th{
+text-align:center;
+font-weight:bold;
 }
 
-.signature p {
-  margin-bottom: 30px;
+.signature-section{
+margin-top:60px;
 }
 
-/* PRINT BUTTON */
-
-.print {
-  margin-top: 30px;
-  text-align: center;
+.signature{
+margin-bottom:40px;
+font-size:14px;
 }
 
-/* HIDE BUTTON WHEN PRINTING */
+.footer{
+text-align:right;
+font-size:11px;
+margin-top:60px;
+}
 
-@media print {
+.print{
+margin-top:20px;
+text-align:center;
+}
 
-  .print {
-    display: none;
-  }
+button{
+padding:10px 20px;
+font-size:14px;
+cursor:pointer;
+}
 
-  @page {
-    size: 13in 8.5in;
-    margin: 0.5in;
-  }
+/* PRINT SETTINGS */
 
-  body {
-    margin: 0;
-  }
+@media print{
+
+.print{
+display:none;
+}
+
+@page{
+size:legal;
+margin:0.5in;
+}
+
+.form{
+padding:0.75in;
+}
 
 }
