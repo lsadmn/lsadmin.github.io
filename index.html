@@ -37,31 +37,21 @@ This is to certify that I have received the following company property in good w
 
 <table class="asset-table">
 
-<table class="items">
-
-<thead>
 <tr>
-<th>Description</th>
-<th>Brand</th>
-<th>Model</th>
-<th>Serial</th>
-<th>Assigned Date</th>
+<th>DESCRIPTION</th>
+<th>BRAND</th>
+<th>MODEL</th>
+<th>SERIAL</th>
+<th>ASSIGNED DATE</th>
 </tr>
-</thead>
-
-<tbody>
 
 <tr v-for="item in invoice.Items">
 <td>{{ item.Description }}</td>
 <td>{{ item.Brand }}</td>
 <td>{{ item.Model }}</td>
 <td>{{ item.Serial }}</td>
-<td>{{ item["Assigned date"] }}</td>
+<td>{{ moment(item["Assigned date"]).format("MMM DD, YYYY") }}</td>
 </tr>
-
-</tbody>
-
-</table>
 
 <tr v-if="!invoice.Items.length">
 <td colspan="5">No equipment assigned</td>
