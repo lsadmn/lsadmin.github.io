@@ -106,3 +106,26 @@ padding:0.75in;
 }
 
 }
+
+@media print {
+
+  .print {
+    display: none;
+  }
+
+  @page {
+    size: legal landscape;
+    margin: 0.5in;
+  }
+
+  body {
+    margin: 0;
+  }
+
+  .invoice {
+    width: 13in;
+    min-height: 8.5in;
+    padding: 0.75in;
+  }
+
+}
