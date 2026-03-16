@@ -1,48 +1,28 @@
-<body>
+<div class="invoice" v-if="invoice">
 
-<div id="app">
-
-<div class="status" v-if="status">
-<template v-if="status === 'waiting'">
-<p>Waiting for data...</p>
-<ul>
-<li v-bind:class="[tableConnected ? 'done' : '']">I need <b>read table</b> access.</li>
-<li v-bind:class="[haveRows ? 'done' : '']">I need at least one row of data.</li>
-<li v-bind:class="[rowConnected ? 'done' : '']">I need <b>Select By</b> set.</li>
-</ul>
-</template>
-<template v-else>
-{{ status }}
-</template>
+<div class="top">
+<div class="block">
+<div class="header">
+<div class="meta title">ANNEX A – EQUIPMENT ISSUANCE</div>
+</div>
+</div>
 </div>
 
-<div class="form" v-if="invoice">
-
-<div class="title">
-ANNEX A
+<div class="client">
+<div class="title">NAME</div>
+<div class="details">
+{{ invoice["Full Name"] }}
+</div>
 </div>
 
-<div class="subtitle">
-WORK FROM HOME ASSET ACKNOWLEDGEMENT RECEIPT FORM
-</div>
-
-<div class="employee">
-<strong>Employee Name:</strong>
-<span class="employee-name">{{ invoice["Full Name"] }}</span>
-</div>
-
-<p class="statement">
-This is to certify that I have received the following company property in good working condition:
-</p>
-
-<table class="asset-table">
+<table class="items">
 
 <tr>
-<th>DESCRIPTION</th>
-<th>BRAND</th>
-<th>MODEL</th>
-<th>SERIAL</th>
-<th>ASSIGNED DATE</th>
+<th>Description</th>
+<th>Brand</th>
+<th>Model</th>
+<th>Serial</th>
+<th>Assigned Date</th>
 </tr>
 
 <tr v-for="item in invoice.Items">
@@ -54,33 +34,9 @@ This is to certify that I have received the following company property in good w
 </tr>
 
 <tr v-if="!invoice.Items.length">
-<td colspan="5">No equipment assigned</td>
+<td colspan="5">No assigned equipment</td>
 </tr>
 
 </table>
 
-<div class="signature-section">
-
-<div class="signature">
-Employee Signature: _________________________
 </div>
-
-<div class="signature">
-Asset Custodian: _________________________
-</div>
-
-</div>
-
-<div class="footer">
-WORK FROM HOME AGREEMENT | ANNEX A | PAGE 1 of 1
-</div>
-
-<div class="print">
-<button onclick="window.print()">PRINT</button>
-</div>
-
-</div>
-
-</div>
-
-</body>
