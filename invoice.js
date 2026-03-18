@@ -238,9 +238,11 @@ function _buildItemsFromAssetsIfMissing(row, assetRecordsById) {
 }
 
 function _tableToRecordsById(table) {
-  // grist.docApi.fetchTable() returns {id, columns:{colId: [..]}}
-  const cols = (table && table.columns) || {};
-  const ids = cols.id || cols.ID || cols.Id;
+  // grist.docApi.fetchTable() commonly returns an object of column arrays:
+  //   { id: [1,2,...], ColA: [...], ColB: [...] }
+  // Some variants return { columns: { ... } }, so support both.
+  const cols = (table && table.columns) ? table.columns : (table || {});
+  const ids = cols.id || cols.ID || cols.Id || (table && Array.isArray(table.id) ? table.id : null);
   if (!Array.isArray(ids)) {
     throw new Error('Asset table is missing an id column.');
   }
@@ -252,6 +254,8 @@ function _tableToRecordsById(table) {
         rec[colId] = colVals[i];
       }
     }
+    // Ensure an id field is present on the record for debugging/joins.
+    if (rec.id === undefined) { rec.id = ids[i]; }
     recordById.set(ids[i], rec);
   }
   return recordById;
