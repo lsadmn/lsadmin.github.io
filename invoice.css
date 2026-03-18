@@ -155,6 +155,9 @@ padding:0.75in;
 /* Print-friendly: force high-contrast black-on-white for table. */
 .asset-table{
   border:1px solid #000 !important;
+  border-radius:0 !important;
+  overflow:visible !important;
+  border-collapse:collapse !important;
 }
 
 .asset-table th,
