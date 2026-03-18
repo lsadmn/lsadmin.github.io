@@ -152,4 +152,28 @@ margin:0.5in;
 padding:0.75in;
 }
 
+/* Print-friendly: force high-contrast black-on-white for table. */
+.asset-table{
+  border:1px solid #000 !important;
+}
+
+.asset-table th,
+.asset-table td{
+  color:#000 !important;
+  background:#fff !important; /* browsers may skip background colors */
+  border:1px solid #000 !important;
+}
+
+.asset-table th{
+  background:#fff !important;
+}
+
+.asset-table tr:nth-child(even) td{
+  background:#fff !important;
+}
+
+.asset-table tr:hover td{
+  background:#fff !important;
+}
+
 }
