@@ -190,4 +190,20 @@ padding:0.75in;
   background:#fff !important;
 }
 
+/* Page number indicator using CSS counters (print-only). */
+.page-counter::before{
+  content: counter(page);
+}
+.page-counter::after{
+  content: " of " counter(pages);
+}
+
+.footer{
+  position:fixed;
+  bottom:0.35in;
+  right:0.75in;
+  width:calc(100% - 1.5in);
+  color:#000;
+}
+
 }
