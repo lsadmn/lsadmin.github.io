@@ -156,8 +156,12 @@ padding:0.75in;
 .asset-table{
   border:1px solid #000 !important;
   border-radius:0 !important;
-  overflow:visible !important;
+  overflow:hidden !important;
   border-collapse:collapse !important;
+  /* Some browsers don't always print the table border in collapsed mode.
+     Outline gives us a reliable outer box. */
+  outline:1px solid #000 !important;
+  outline-offset:-1px;
 }
 
 .asset-table th,
