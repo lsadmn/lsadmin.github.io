@@ -138,12 +138,6 @@ filter:brightness(0.98);
 
 @media print{
 
-body{
-  /* Ensure the printable page content is centered. */
-  display:flex;
-  justify-content:center;
-}
-
 .print{
 display:none;
 }
@@ -155,7 +149,6 @@ margin:0.5in;
 }
 
 .form{
-  margin:0 auto;
 padding:0.75in;
 }
 
