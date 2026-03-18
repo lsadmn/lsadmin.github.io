@@ -56,19 +56,19 @@
   <table class="asset-table">
 
     <tr>
-      <th>DESCRIPTION</th>
       <th>BRAND</th>
       <th>MODEL</th>
       <th>SERIAL</th>
+      <th>DESCRIPTION</th>
       <th>ASSIGNED DATE</th>
     </tr>
 
     <!-- SAFE LOOP -->
     <tr v-for="item in (invoice.Items || [])" :key="item.id">
-      <td>{{ item.Description || '-' }}</td>
       <td>{{ item.Brand || '-' }}</td>
       <td>{{ item.Model || '-' }}</td>
       <td>{{ item.Serial || '-' }}</td>
+      <td>{{ item.Description || '-' }}</td>
       <td>
         {{ item["Assigned Date"]
             ? moment(item["Assigned Date"]).format("MMM DD, YYYY")
