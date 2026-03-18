@@ -79,7 +79,37 @@ let _accessLevel = 'read table';
 function _updateInvoiceFromAssetsRecords(records) {
   try {
     data.status = '';
-    const rawItems = Array.isArray(records) ? records : [];
+    const toRowObjects = (payload) => {
+      if (!payload) { return []; }
+      if (Array.isArray(payload)) { return payload; }
+
+      // {records:[{id, fields:{...}}, ...]} shape.
+      if (Array.isArray(payload.records)) {
+        return payload.records.map(r => (r && r.fields) ? Object.assign({id: r.id}, r.fields) : r);
+      }
+
+      // Columnar shape: {id:[..], ColA:[..], ColB:[..]}
+      const cols = payload.columns ? payload.columns : payload;
+      const ids = cols && (cols.id || cols.ID || cols.Id);
+      if (Array.isArray(ids)) {
+        const out = [];
+        for (let i = 0; i < ids.length; i++) {
+          const rec = {id: ids[i]};
+          for (const [colId, colVals] of Object.entries(cols)) {
+            if (Array.isArray(colVals)) {
+              rec[colId] = colVals[i];
+            }
+          }
+          out.push(rec);
+        }
+        return out;
+      }
+
+      return [];
+    };
+
+    const rawItems = toRowObjects(records);
+    console.log('[AnnexA] onRecords rows:', rawItems.length, 'keys:', rawItems[0] ? Object.keys(rawItems[0]) : []);
 
     const pick = (obj, keys) => {
       for (const k of keys) {
@@ -97,7 +127,7 @@ function _updateInvoiceFromAssetsRecords(records) {
       return {
         // Keep the original record for debugging.
         _raw: rec,
-        Designation: pick(rec, ['Designation', 'Employee', 'Full Name', 'Full name']),
+        Designation: _normalizeCellValue(pick(rec, ['Designation', 'Employee', 'Full Name', 'Full name'])),
         'Asset Type': pick(rec, ['Asset Type', 'Asset type', 'AssetType', 'Type']),
         Description: pick(rec, ['Description', 'Item', 'Equipment', 'Asset', 'Device']),
         Brand: pick(rec, ['Brand', 'Make', 'Manufacturer']),
