@@ -15,82 +15,93 @@
 
 <div id="app">
 
+<!-- STATUS -->
 <div class="status" v-if="status">
-<template v-if="status === 'waiting'">
-<p>Waiting for data...</p>
-<ul>
-<li v-bind:class="[tableConnected ? 'done' : '']">I need <b>read table</b> access.</li>
-<li v-bind:class="[haveRows ? 'done' : '']">I need at least one row of data.</li>
-<li v-bind:class="[rowConnected ? 'done' : '']">I need <b>Select By</b> set.</li>
-</ul>
-</template>
-<template v-else>
-{{ status }}
-</template>
+  <template v-if="status === 'waiting'">
+    <p>Waiting for data...</p>
+    <ul>
+      <li :class="{ done: tableConnected }">I need <b>read table</b> access.</li>
+      <li :class="{ done: haveRows }">I need at least one row of data.</li>
+      <li :class="{ done: rowConnected }">I need <b>Select By</b> set.</li>
+    </ul>
+  </template>
+  <template v-else>
+    {{ status }}
+  </template>
 </div>
 
+<!-- FORM -->
 <div class="form" v-if="invoice">
 
-<div class="title">
-ANNEX A
-</div>
+  <!-- DEBUG (REMOVE AFTER TESTING) -->
+  <!-- <pre>{{ invoice }}</pre> -->
 
-<div class="subtitle">
-WORK FROM HOME ASSET ACKNOWLEDGEMENT RECEIPT FORM
-</div>
+  <div class="title">
+    ANNEX A
+  </div>
 
-<div class="employee">
-<strong>Employee Name:</strong>
-<span class="employee-name">{{ invoice["Full Name"] }}</span>
-</div>
+  <div class="subtitle">
+    WORK FROM HOME ASSET ACKNOWLEDGEMENT RECEIPT FORM
+  </div>
 
-<p class="statement">
-This is to certify that I have received the following company property in good working condition:
-</p>
+  <div class="employee">
+    <strong>Employee Name:</strong>
+    <span class="employee-name">{{ invoice["Full Name"] || '-' }}</span>
+  </div>
 
-<table class="asset-table">
+  <p class="statement">
+    This is to certify that I have received the following company property in good working condition:
+  </p>
 
-<tr>
-<th>DESCRIPTION</th>
-<th>BRAND</th>
-<th>MODEL</th>
-<th>SERIAL</th>
-<th>ASSIGNED DATE</th>
-</tr>
+  <table class="asset-table">
 
-<tr v-for="item in invoice.Items">
-<td>{{ item.Description }}</td>
-<td>{{ item.Brand }}</td>
-<td>{{ item.Model }}</td>
-<td>{{ item.Serial }}</td>
-<td>{{ moment(item["Assigned date"]).format("MMM DD, YYYY") }}</td>
-</tr>
+    <tr>
+      <th>DESCRIPTION</th>
+      <th>BRAND</th>
+      <th>MODEL</th>
+      <th>SERIAL</th>
+      <th>ASSIGNED DATE</th>
+    </tr>
 
-<tr v-if="!invoice.Items.length">
-<td colspan="5">No equipment assigned</td>
-</tr>
+    <!-- SAFE LOOP -->
+    <tr v-for="item in (invoice.Items || [])" :key="item.id">
+      <td>{{ item.Description || '-' }}</td>
+      <td>{{ item.Brand || '-' }}</td>
+      <td>{{ item.Model || '-' }}</td>
+      <td>{{ item.Serial || '-' }}</td>
+      <td>
+        {{ item["Assigned Date"]
+            ? moment(item["Assigned Date"]).format("MMM DD, YYYY")
+            : '-' }}
+      </td>
+    </tr>
 
-</table>
+    <!-- EMPTY STATE -->
+    <tr v-if="!(invoice.Items && invoice.Items.length)">
+      <td colspan="5">No equipment assigned</td>
+    </tr>
 
-<div class="signature-section">
+  </table>
 
-<div class="signature">
-Employee Signature: _________________________
-</div>
+  <div class="signature-section">
 
-<div class="signature">
-Asset Custodian: _________________________
-</div>
+    <div class="signature">
+      Employee Signature: _________________________
+    </div>
 
-</div>
+    <div class="signature">
+      Asset Custodian: _________________________
+    </div>
 
-<div class="footer">
-WORK FROM HOME AGREEMENT | ANNEX A | PAGE 1 of 1
-</div>
+  </div>
 
-<div class="print">
-<button onclick="window.print()">PRINT</button>
-</div>
+  <div class="footer">
+    WORK FROM HOME AGREEMENT | ANNEX A | PAGE 1 of 1
+  </div>
+
+  <div class="print">
+    <button onclick="window.print()">PRINT</button>
+  </div>
 
 </div>
 
