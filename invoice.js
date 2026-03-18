@@ -238,24 +238,57 @@ function _buildItemsFromAssetsIfMissing(row, assetRecordsById) {
 }
 
 function _tableToRecordsById(table) {
-  // grist.docApi.fetchTable() commonly returns an object of column arrays:
-  //   { id: [1,2,...], ColA: [...], ColB: [...] }
-  // Some variants return { columns: { ... } }, so support both.
-  const cols = (table && table.columns) ? table.columns : (table || {});
-  const ids = cols.id || cols.ID || cols.Id || (table && Array.isArray(table.id) ? table.id : null);
-  if (!Array.isArray(ids)) {
-    throw new Error('Asset table is missing an id column.');
+  // Grist has returned a few shapes over time; support the common ones:
+  // - Columnar: { id:[..], ColA:[..], ColB:[..] }
+  // - Wrapped:  { columns: { id:[..], ColA:[..] } }
+  // - Records:  { records: [{id, fields:{...}}, ...] } or [{id,...}, ...]
+  if (!table) {
+    throw new Error('Asset table fetch returned empty data.');
   }
+
   const recordById = new Map();
+
+  // 1) Array-of-records shape.
+  if (Array.isArray(table)) {
+    for (const rec of table) {
+      const rid = rec && (rec.id ?? rec.ID ?? rec.Id);
+      if (rid == null) { continue; }
+      recordById.set(rid, rec);
+    }
+    if (recordById.size > 0) { return recordById; }
+  }
+
+  // 2) {records:[...]} shape.
+  if (Array.isArray(table.records)) {
+    for (const r of table.records) {
+      const rid = r && (r.id ?? r.ID ?? r.Id);
+      if (rid == null) { continue; }
+      const rec = r.fields ? Object.assign({id: rid}, r.fields) : r;
+      recordById.set(rid, rec);
+    }
+    if (recordById.size > 0) { return recordById; }
+  }
+
+  // 3) Columnar shape (possibly wrapped in `.columns`).
+  const cols = table.columns ? table.columns : table;
+  const ids = cols.id || cols.ID || cols.Id;
+  if (!Array.isArray(ids)) {
+    const keys = Object.keys(table || {});
+    const colKeys = (cols && cols !== table) ? Object.keys(cols) : [];
+    throw new Error(
+      'Asset table is missing an id column. ' +
+      'Got keys: ' + JSON.stringify(keys.slice(0, 25)) +
+      (colKeys.length ? ' and columns keys: ' + JSON.stringify(colKeys.slice(0, 25)) : '')
+    );
+  }
+
   for (let i = 0; i < ids.length; i++) {
-    const rec = {};
+    const rec = {id: ids[i]};
     for (const [colId, colVals] of Object.entries(cols)) {
       if (Array.isArray(colVals)) {
         rec[colId] = colVals[i];
       }
     }
-    // Ensure an id field is present on the record for debugging/joins.
-    if (rec.id === undefined) { rec.id = ids[i]; }
     recordById.set(ids[i], rec);
   }
   return recordById;
@@ -353,7 +386,7 @@ async function updateInvoice(row) {
 
 ready(function() {
   // Update the invoice anytime the document data changes.
-  grist.ready();
+  grist.ready({requiredAccess: 'full'});
   grist.onRecord(row => {
     _lastSelectedRow = row;
     updateInvoice(row).catch(handleError);

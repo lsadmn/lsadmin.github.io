@@ -8,7 +8,7 @@
     "url": "https://gristlabs.github.io/grist-widget/invoices",
     "widgetId": "@gristlabs/widget-invoices",
     "published": true,
-    "accessLevel": "read table",
+    "accessLevel": "full",
     "renderAfterReady": true,
     "description": "Generate printable invoices, with values filled in from the selected record.",
     "authors": [
