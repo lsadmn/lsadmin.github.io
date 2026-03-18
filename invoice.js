@@ -79,7 +79,36 @@ let _accessLevel = 'read table';
 function _updateInvoiceFromAssetsRecords(records) {
   try {
     data.status = '';
-    const items = Array.isArray(records) ? records : [];
+    const rawItems = Array.isArray(records) ? records : [];
+
+    const pick = (obj, keys) => {
+      for (const k of keys) {
+        if (obj && obj[k] !== undefined && obj[k] !== null && obj[k] !== '') {
+          return obj[k];
+        }
+      }
+      return undefined;
+    };
+
+    const normalizeAsset = (rec) => {
+      const assigned =
+        pick(rec, ['Assigned date', 'Assigned Date', 'Assigned', 'AssignedDate', 'Assigned_Date']) ??
+        pick(rec, ['Assigned On', 'Assigned on', 'AssignedOn']);
+      return {
+        // Keep the original record for debugging.
+        _raw: rec,
+        Designation: pick(rec, ['Designation', 'Employee', 'Full Name', 'Full name']),
+        'Asset Type': pick(rec, ['Asset Type', 'Asset type', 'AssetType', 'Type']),
+        Description: pick(rec, ['Description', 'Item', 'Equipment', 'Asset', 'Device']),
+        Brand: pick(rec, ['Brand', 'Make', 'Manufacturer']),
+        Model: pick(rec, ['Model', 'Model No', 'ModelNo', 'Model Number', 'ModelNumber']),
+        Serial: pick(rec, ['Serial', 'Serial No', 'SerialNo', 'Serial Number', 'SerialNumber']),
+        Notes: pick(rec, ['Notes', 'Note', 'Remarks', 'Comment']),
+        'Assigned date': assigned,
+      };
+    };
+
+    const items = rawItems.map(normalizeAsset);
 
     // Best-effort: if you want a reliable employee name here, add a formula column
     // in ASSETS such as "Full Name" = $Designation.Full_Name (or similar) and make it visible.
@@ -90,6 +119,7 @@ function _updateInvoiceFromAssetsRecords(records) {
         first.FullName ??
         first.Employee ??
         first.Designation ??
+        first['Designation'] ??
         ''
     );
 
