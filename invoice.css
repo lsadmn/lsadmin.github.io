@@ -2,6 +2,7 @@ body{
 font-family: Arial, Helvetica, sans-serif;
 margin:0;
 padding:0;
+color:#111;
 }
 
 .form{
@@ -12,11 +13,20 @@ padding:1in;
 box-sizing:border-box;
 }
 
+.form{
+  --brand:#470708;
+  --brand-ink:#ffffff;
+  --border:rgba(71, 7, 8, 0.35);
+  --row-alt:rgba(71, 7, 8, 0.04);
+  --row-hover:rgba(71, 7, 8, 0.08);
+}
+
 .title{
 text-align:center;
 font-weight:bold;
 font-size:18px;
 margin-bottom:5px;
+letter-spacing:0.5px;
 }
 
 .subtitle{
@@ -24,6 +34,7 @@ text-align:center;
 font-weight:bold;
 font-size:14px;
 margin-bottom:40px;
+color:#470708;
 }
 
 .employee{
@@ -47,19 +58,42 @@ width:100%;
 border-collapse:collapse;
 margin-top:10px;
 margin-bottom:80px;
+table-layout:fixed;
+border:1px solid var(--border);
+border-radius:10px;
+overflow:hidden;
 }
 
 .asset-table th,
 .asset-table td{
-border:1px solid black;
-padding:8px;
+border:1px solid var(--border);
+padding:10px 12px;
 font-size:13px;
 text-align:left;
+vertical-align:top;
 }
 
 .asset-table th{
 text-align:center;
 font-weight:bold;
+background:var(--brand);
+color:var(--brand-ink);
+border-color:rgba(255, 255, 255, 0.25);
+text-transform:uppercase;
+letter-spacing:0.6px;
+font-size:12px;
+}
+
+.asset-table tr:nth-child(even) td{
+background:var(--row-alt);
+}
+
+.asset-table tr:hover td{
+background:var(--row-hover);
+}
+
+.asset-table td{
+word-wrap:break-word;
 }
 
 .signature-section{
@@ -75,6 +109,7 @@ font-size:14px;
 text-align:right;
 font-size:11px;
 margin-top:60px;
+color:rgba(17, 17, 17, 0.75);
 }
 
 .print{
@@ -86,6 +121,19 @@ button{
 padding:10px 20px;
 font-size:14px;
 cursor:pointer;
+border:1px solid var(--brand);
+background:var(--brand);
+color:#fff;
+border-radius:8px;
+font-weight:600;
+}
+
+button:hover{
+filter:brightness(1.05);
+}
+
+button:active{
+filter:brightness(0.98);
 }
 
 @media print{

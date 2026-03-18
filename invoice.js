@@ -70,6 +70,9 @@ const data = {
   haveRows: false,
 };
 let app = undefined;
+let _assetTableCache = null;
+let _assetTableId = null;
+let _lastSelectedRow = null;
 
 Vue.filter('currency', formatNumberAsUSD)
 function formatNumberAsUSD(value) {
@@ -136,7 +139,142 @@ function prepareList(lst, order) {
   return lst;
 }
 
-function updateInvoice(row) {
+async function _fetchFirstAvailableTable(tableIds) {
+  let lastErr = null;
+  for (const tableId of tableIds) {
+    try {
+      return await grist.docApi.fetchTable(tableId);
+    } catch (e) {
+      lastErr = e;
+    }
+  }
+  throw lastErr || new Error('Could not fetch any asset table.');
+}
+
+async function _getAssetTable() {
+  if (_assetTableCache) { return _assetTableCache; }
+  if (_assetTableId === null) {
+    try {
+      const tables = await grist.docApi.listTables();
+      const byRelevance = [...tables].sort((a, b) => {
+        const al = (a.id || '').toLowerCase();
+        const bl = (b.id || '').toLowerCase();
+        const as = al === 'assets' || al === 'asset' ? 2 : (al.includes('asset') ? 1 : 0);
+        const bs = bl === 'assets' || bl === 'asset' ? 2 : (bl.includes('asset') ? 1 : 0);
+        return bs - as;
+      });
+      const best = byRelevance.find(t => (t.id || '').toLowerCase().includes('asset'));
+      if (best && best.id) {
+        _assetTableId = best.id;
+      }
+    } catch (e) {
+      // We'll fall back to common names below.
+    }
+  }
+
+  const table = _assetTableId
+    ? await grist.docApi.fetchTable(_assetTableId)
+    : await _fetchFirstAvailableTable(['ASSETS', 'Assets', 'Asset', 'assets', 'asset']);
+
+  _assetTableCache = _tableToRecordsById(table);
+  return _assetTableCache;
+}
+
+function _looksLikeRowIdList(value) {
+  if (!Array.isArray(value)) { return false; }
+  if (value.length === 0) { return false; }
+  const v0 = value[0];
+  return typeof v0 === 'number' || (typeof v0 === 'string' && /^\d+$/.test(v0));
+}
+
+function _normalizeCellValue(value) {
+  // Handle common Grist cell shapes for References.
+  if (value == null) { return null; }
+  if (typeof value === 'number' || typeof value === 'string') { return value; }
+  if (Array.isArray(value)) {
+    // Common ref cell shapes are [id, display] in some contexts.
+    if (value.length >= 1) { return value[0]; }
+  }
+  if (typeof value === 'object') {
+    if ('id' in value) { return value.id; }
+  }
+  return String(value);
+}
+
+function _guessJoinValuesFromSelectedRow(row) {
+  const candidates = [
+    row.id,
+    row.Designation,
+    row['Designation'],
+    row['Full Name'],
+    row['Full name'],
+    row.FullName,
+    row.Full_Name,
+  ];
+  return candidates
+    .map(_normalizeCellValue)
+    .filter(v => v !== null && v !== undefined && v !== '');
+}
+
+function _buildItemsFromAssetsIfMissing(row, assetRecordsById) {
+  if (!row || (Array.isArray(row.Items) && row.Items.length)) { return row; }
+
+  const joinValues = _guessJoinValuesFromSelectedRow(row);
+  if (joinValues.length === 0) { return row; }
+
+  const assets = [];
+  for (const rec of assetRecordsById.values()) {
+    const recJoin = _normalizeCellValue(
+      rec.Designation ?? rec['Designation'] ?? rec.Employee ?? rec['Employee'] ?? rec['Full Name']
+    );
+    if (recJoin == null) { continue; }
+    if (joinValues.some(v => String(v) === String(recJoin))) {
+      assets.push(rec);
+    }
+  }
+
+  row.Items = assets;
+  return row;
+}
+
+function _tableToRecordsById(table) {
+  // grist.docApi.fetchTable() returns {id, columns:{colId: [..]}}
+  const cols = (table && table.columns) || {};
+  const ids = cols.id || cols.ID || cols.Id;
+  if (!Array.isArray(ids)) {
+    throw new Error('Asset table is missing an id column.');
+  }
+  const recordById = new Map();
+  for (let i = 0; i < ids.length; i++) {
+    const rec = {};
+    for (const [colId, colVals] of Object.entries(cols)) {
+      if (Array.isArray(colVals)) {
+        rec[colId] = colVals[i];
+      }
+    }
+    recordById.set(ids[i], rec);
+  }
+  return recordById;
+}
+
+async function _expandAssetItemsIfNeeded(row) {
+  // If Items is a ReferenceList to an Asset table, Grist typically provides rowIds.
+  // Expand rowIds into objects so the template can render Brand/Model/Serial/etc.
+  if (!row || !_looksLikeRowIdList(row.Items)) { return row; }
+
+  const assetRecordsById = await _getAssetTable();
+
+  const expanded = [];
+  for (const rawId of row.Items) {
+    const id = typeof rawId === 'string' ? Number(rawId) : rawId;
+    const rec = assetRecordsById.get(id);
+    if (rec) { expanded.push(rec); }
+  }
+  row.Items = expanded;
+  return row;
+}
+
+async function updateInvoice(row) {
   try {
     data.status = '';
     if (row === null) {
@@ -150,6 +288,10 @@ function updateInvoice(row) {
         throw new Error('Could not understand References column. ' + err);
       }
     }
+
+    row = await _expandAssetItemsIfNeeded(row);
+    // If there's no reference list column, build Items by filtering the Assets table.
+    row = _buildItemsFromAssetsIfMissing(row, await _getAssetTable());
 
     // Add some guidance about columns.
     const want = new Set(Object.keys(addDemo({})));
@@ -208,7 +350,10 @@ function updateInvoice(row) {
 ready(function() {
   // Update the invoice anytime the document data changes.
   grist.ready();
-  grist.onRecord(updateInvoice);
+  grist.onRecord(row => {
+    _lastSelectedRow = row;
+    updateInvoice(row).catch(handleError);
+  });
 
   // Monitor status so we can give user advice.
   grist.on('message', msg => {
@@ -223,7 +368,22 @@ ready(function() {
       }).catch(e => console.log(e));
     }
     if (msg.tableId) { app.tableConnected = true; }
-    if (msg.tableId && !msg.dataChange) { app.RowConnected = true; }
+    if (msg.tableId && !msg.dataChange) { app.rowConnected = true; }
+
+    // If any relevant table changes, refresh cached Assets and re-render.
+    // Cross-table updates (e.g. editing ASSETS while connected to DESIGNATION)
+    // won't trigger onRecord(), so we use dataChange messages.
+    if (msg.dataChange) {
+      const changedTable = String(msg.tableId || '');
+      const assetsTable = String(_assetTableId || '');
+      const looksAssety = changedTable.toLowerCase().includes('asset');
+      if (looksAssety || (assetsTable && changedTable === assetsTable)) {
+        _assetTableCache = null;
+        if (_lastSelectedRow) {
+          updateInvoice(_lastSelectedRow).catch(handleError);
+        }
+      }
+    }
   });
 
   Vue.config.errorHandler = function (err, vm, info)  {
