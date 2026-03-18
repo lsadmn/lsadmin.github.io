@@ -143,13 +143,15 @@ function _updateInvoiceFromAssetsRecords(records) {
     // Best-effort: if you want a reliable employee name here, add a formula column
     // in ASSETS such as "Full Name" = $Designation.Full_Name (or similar) and make it visible.
     const first = items[0] || {};
+    // In your setup, employee name is stored in ASSETS under the "Designation" column,
+    // so prefer that first.
     const fullName = _normalizeCellValue(
-      first['Full Name'] ??
+      first.Designation ??
+        first['Designation'] ??
+        first['Full Name'] ??
         first['Full name'] ??
         first.FullName ??
         first.Employee ??
-        first.Designation ??
-        first['Designation'] ??
         ''
     );
 
