@@ -73,7 +73,8 @@ let app = undefined;
 let _assetTableCache = null;
 let _assetTableId = null;
 let _lastSelectedRow = null;
-let _accessLevel = null;
+// Default to least privilege; Grist will tell us actual access via onOptions.
+let _accessLevel = 'read table';
 
 function _updateInvoiceFromAssetsRecords(records) {
   try {
@@ -429,7 +430,9 @@ async function updateInvoice(row) {
 
 ready(function() {
   // Update the invoice anytime the document data changes.
-  grist.ready({requiredAccess: 'full'});
+  // Ask for read access by default; if you later switch widget access to "Full document access",
+  // Grist will report it via onOptions and we'll automatically enable cross-table fetching.
+  grist.ready({requiredAccess: 'read table'});
 
   // Track granted access level so we can fall back when needed.
   grist.onOptions(function(options, interaction) {
@@ -448,9 +451,9 @@ ready(function() {
 
   grist.onRecord(row => {
     _lastSelectedRow = row;
-    // With full access, we can treat the selected record (e.g. DESIGNATION) as the
-    // source and fetch ASSETS ourselves. Without full access, rely on onRecords.
-    if (!_accessLevel || _accessLevel === 'full') {
+    // Only in full-access mode do we fetch other tables (e.g. ASSETS) ourselves.
+    // In read-table mode, rely on onRecords() with Select Data = ASSETS.
+    if (_accessLevel === 'full') {
       updateInvoice(row).catch(handleError);
     }
   });
@@ -473,7 +476,7 @@ ready(function() {
     // If any relevant table changes, refresh cached Assets and re-render.
     // Cross-table updates (e.g. editing ASSETS while connected to DESIGNATION)
     // won't trigger onRecord(), so we use dataChange messages.
-    if (msg.dataChange) {
+    if (msg.dataChange && _accessLevel === 'full') {
       const changedTable = String(msg.tableId || '');
       const assetsTable = String(_assetTableId || '');
       const looksAssety = changedTable.toLowerCase().includes('asset');
