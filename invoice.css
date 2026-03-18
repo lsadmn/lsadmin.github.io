@@ -142,6 +142,11 @@ filter:brightness(0.98);
 display:none;
 }
 
+body{
+  margin:0;
+  padding:0;
+}
+
 @page{
   /* Most browsers honor `@page size: <paper> landscape` for print orientation. */
   size:legal landscape;
@@ -149,6 +154,8 @@ margin:0.5in;
 }
 
 .form{
+  /* Override default centering so invoice starts in the upper-left corner. */
+  margin:0 !important;
 padding:0.75in;
 }
 
