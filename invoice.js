@@ -73,6 +73,36 @@ let app = undefined;
 let _assetTableCache = null;
 let _assetTableId = null;
 let _lastSelectedRow = null;
+let _accessLevel = null;
+
+function _updateInvoiceFromAssetsRecords(records) {
+  try {
+    data.status = '';
+    const items = Array.isArray(records) ? records : [];
+
+    // Best-effort: if you want a reliable employee name here, add a formula column
+    // in ASSETS such as "Full Name" = $Designation.Full_Name (or similar) and make it visible.
+    const first = items[0] || {};
+    const fullName = _normalizeCellValue(
+      first['Full Name'] ??
+        first['Full name'] ??
+        first.FullName ??
+        first.Employee ??
+        first.Designation ??
+        ''
+    );
+
+    const row = {
+      Items: items,
+      'Full Name': fullName,
+    };
+
+    data.invoice = Object.assign({}, data.invoice || {}, row);
+    window.invoice = row;
+  } catch (err) {
+    handleError(err);
+  }
+}
 
 Vue.filter('currency', formatNumberAsUSD)
 function formatNumberAsUSD(value) {
@@ -153,6 +183,19 @@ async function _fetchFirstAvailableTable(tableIds) {
 
 async function _getAssetTable() {
   if (_assetTableCache) { return _assetTableCache; }
+
+  // If we don't have full document access, we can only read the selected table.
+  // In that case, rely on the widget configuration (Select Data) and read it via fetchSelectedTable().
+  if (_accessLevel && _accessLevel !== 'full') {
+    try {
+      const selected = await grist.docApi.fetchSelectedTable();
+      _assetTableCache = _tableToRecordsById(selected);
+      return _assetTableCache;
+    } catch (e) {
+      // Fall through to try other strategies (may still fail depending on access).
+    }
+  }
+
   if (_assetTableId === null) {
     try {
       const tables = await grist.docApi.listTables();
@@ -387,9 +430,29 @@ async function updateInvoice(row) {
 ready(function() {
   // Update the invoice anytime the document data changes.
   grist.ready({requiredAccess: 'full'});
+
+  // Track granted access level so we can fall back when needed.
+  grist.onOptions(function(options, interaction) {
+    if (interaction && interaction.access_level) {
+      _accessLevel = interaction.access_level;
+    }
+  });
+
+  // When Select Data = ASSETS and Select By = DESIGNATION, Grist will pass the
+  // filtered ASSETS rows here. This works with "Read selected table" access.
+  grist.onRecords(function(records) {
+    if (_accessLevel && _accessLevel !== 'full') {
+      _updateInvoiceFromAssetsRecords(records);
+    }
+  });
+
   grist.onRecord(row => {
     _lastSelectedRow = row;
-    updateInvoice(row).catch(handleError);
+    // With full access, we can treat the selected record (e.g. DESIGNATION) as the
+    // source and fetch ASSETS ourselves. Without full access, rely on onRecords.
+    if (!_accessLevel || _accessLevel === 'full') {
+      updateInvoice(row).catch(handleError);
+    }
   });
 
   // Monitor status so we can give user advice.
