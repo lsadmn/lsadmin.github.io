@@ -70,9 +70,20 @@
       <td>{{ item.Serial || '-' }}</td>
       <td>{{ item.Description || '-' }}</td>
       <td>
-        {{ item["Assigned Date"]
-            ? moment(item["Assigned Date"]).format("MMM DD, YYYY")
-            : '-' }}
+        {{
+          (() => {
+            const raw = item["Assigned Date"] || item["Assigned date"];
+            if (!raw) { return '-'; }
+
+            // Grist dates may arrive as epoch seconds, epoch ms, or date strings like 08-17-24.
+            const value = (typeof raw === "number" && raw < 100000000000) ? raw * 1000 : raw;
+            const parsed = moment(value, ["MM-DD-YY", "MM/DD/YY", "MM-DD-YYYY", "MM/DD/YYYY"], true);
+            if (parsed.isValid()) { return parsed.format("MMM DD, YYYY"); }
+
+            const loose = moment(value);
+            return loose.isValid() ? loose.format("MMM DD, YYYY") : String(raw);
+          })()
+        }}
       </td>
     </tr>
 
@@ -94,6 +105,8 @@
     </div>
 
   </div>
+
+  <div class="footer"></div>
 
   <div class="print">
     <button onclick="window.print()">PRINT</button>

@@ -207,29 +207,3 @@ padding:0.75in;
 }
 
 }
-
-/* COLUMN WIDTH CONTROL */
-.asset-table th:nth-child(1),
-.asset-table td:nth-child(1){
-  width:15%; /* BRAND */
-}
-
-.asset-table th:nth-child(2),
-.asset-table td:nth-child(2){
-  width:25%; /* MODEL (longer) */
-}
-
-.asset-table th:nth-child(3),
-.asset-table td:nth-child(3){
-  width:15%; /* SERIAL */
-}
-
-.asset-table th:nth-child(4),
-.asset-table td:nth-child(4){
-  width:30%; /* DESCRIPTION (longest) */
-}
-
-.asset-table th:nth-child(5),
-.asset-table td:nth-child(5){
-  width:15%; /* DATE */
-}

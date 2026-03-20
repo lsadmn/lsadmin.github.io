@@ -121,9 +121,18 @@ function _updateInvoiceFromAssetsRecords(records) {
     };
 
     const normalizeAsset = (rec) => {
-      const assigned =
+      const assignedFromKnownKeys =
         pick(rec, ['Assigned date', 'Assigned Date', 'Assigned', 'AssignedDate', 'Assigned_Date']) ??
         pick(rec, ['Assigned On', 'Assigned on', 'AssignedOn']);
+
+      // Fallback for Grist column-id vs label differences (e.g. Assigned_Date, assigned_date, etc).
+      const assignedFromFuzzyKey = Object.keys(rec || {}).find(k =>
+        /assigned/i.test(k) && /date|on/i.test(k)
+      );
+
+      const assigned =
+        assignedFromKnownKeys ??
+        (assignedFromFuzzyKey ? rec[assignedFromFuzzyKey] : undefined);
       return {
         // Keep the original record for debugging.
         _raw: rec,
@@ -134,6 +143,7 @@ function _updateInvoiceFromAssetsRecords(records) {
         Model: pick(rec, ['Model', 'Model No', 'ModelNo', 'Model Number', 'ModelNumber']),
         Serial: pick(rec, ['Serial', 'Serial No', 'SerialNo', 'Serial Number', 'SerialNumber']),
         Notes: pick(rec, ['Notes', 'Note', 'Remarks', 'Comment']),
+        'Assigned Date': assigned,
         'Assigned date': assigned,
       };
     };
