@@ -21,13 +21,13 @@ box-sizing:border-box;
   --row-hover:rgba(71, 7, 8, 0.08);
 }
 
-/* ✅ FIXED HEADER SPACING */
+/* ✅ TIGHT HEADER */
 .title{
 text-align:center;
 font-weight:bold;
 font-size:18px;
 margin:0;
-line-height:1.2;
+line-height:1.1;
 letter-spacing:0.5px;
 }
 
@@ -35,13 +35,13 @@ letter-spacing:0.5px;
 text-align:center;
 font-weight:bold;
 font-size:14px;
-margin:5px 0 20px 0;
-line-height:1.2;
+margin:3px 0 10px 0;
+line-height:1.1;
 color:#000000;
 }
 
 .employee{
-margin-bottom:20px;
+margin-bottom:15px;
 font-size:14px;
 }
 
@@ -52,15 +52,15 @@ padding:2px 100px 2px 10px;
 }
 
 .statement{
-margin-bottom:20px;
+margin-bottom:15px;
 font-size:14px;
 }
 
 .asset-table{
 width:100%;
 border-collapse:collapse;
-margin-top:10px;
-margin-bottom:80px;
+margin-top:5px;
+margin-bottom:50px;
 table-layout:fixed;
 border:1px solid var(--border);
 border-radius:10px;
@@ -70,8 +70,8 @@ overflow:hidden;
 .asset-table th,
 .asset-table td{
 border:1px solid var(--border);
-padding:10px 12px;
-font-size:13px;
+padding:8px 10px; /* reduced padding */
+font-size:12px; /* slightly smaller for fit */
 text-align:left;
 vertical-align:top;
 }
@@ -87,7 +87,7 @@ vertical-align:top;
 .asset-table td:nth-child(3){ width:15%; }
 
 .asset-table th:nth-child(4),
-.asset-table td:nth-child(4){ width:40%; } /* DESCRIPTION */
+.asset-table td:nth-child(4){ width:40%; }
 
 .asset-table th:nth-child(5),
 .asset-table td:nth-child(5){ width:15%; }
@@ -100,7 +100,7 @@ color:var(--brand-ink);
 border-color:rgba(255, 255, 255, 0.25);
 text-transform:uppercase;
 letter-spacing:0.6px;
-font-size:12px;
+font-size:11px;
 }
 
 .asset-table tr:nth-child(even) td{
@@ -116,18 +116,18 @@ word-wrap:break-word;
 }
 
 .signature-section{
-margin-top:60px;
+margin-top:40px;
 }
 
 .signature{
-margin-bottom:40px;
+margin-bottom:30px;
 font-size:14px;
 }
 
 .footer{
 text-align:right;
-font-size:11px;
-margin-top:60px;
+font-size:10px;
+margin-top:40px;
 color:rgba(17, 17, 17, 0.75);
 }
 
@@ -168,13 +168,13 @@ body{
 
 @page{
   size:legal landscape;
-  margin:0.5in;
+  margin:0.3in; /* reduced margin */
 }
 
-/* ✅ FIXED TOP SPACING = 1 INCH */
+/* ✅ MINIMIZED TOP SPACE */
 .form{
   margin:0 !important;
-  padding:1in 0.75in 0.75in 0.75in;
+  padding:0.3in 0.6in 0.6in 0.6in;
   width:100%;
 }
 
@@ -216,9 +216,9 @@ body{
 
 .footer{
   position:fixed;
-  bottom:0.35in;
-  right:0.75in;
-  width:calc(100% - 1.5in);
+  bottom:0.3in;
+  right:0.6in;
+  width:calc(100% - 1.2in);
   color:#000;
 }
 
