@@ -21,11 +21,13 @@ box-sizing:border-box;
   --row-hover:rgba(71, 7, 8, 0.08);
 }
 
+/* ✅ FIXED HEADER SPACING */
 .title{
 text-align:center;
 font-weight:bold;
 font-size:18px;
-margin-bottom:5px;
+margin:0;
+line-height:1.2;
 letter-spacing:0.5px;
 }
 
@@ -33,7 +35,8 @@ letter-spacing:0.5px;
 text-align:center;
 font-weight:bold;
 font-size:14px;
-margin-bottom:40px;
+margin:5px 0 20px 0;
+line-height:1.2;
 color:#000000;
 }
 
@@ -73,7 +76,7 @@ text-align:left;
 vertical-align:top;
 }
 
-/* ✅ COLUMN WIDTH CONTROL (ADDED) */
+/* ✅ COLUMN WIDTH CONTROL */
 .asset-table th:nth-child(1),
 .asset-table td:nth-child(1){ width:15%; }
 
@@ -168,10 +171,10 @@ body{
   margin:0.5in;
 }
 
-/* ✅ USE FULL PAGE WIDTH */
+/* ✅ FIXED TOP SPACING = 1 INCH */
 .form{
   margin:0 !important;
-  padding:0.75in;
+  padding:1in 0.75in 0.75in 0.75in;
   width:100%;
 }
 
