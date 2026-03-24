@@ -73,6 +73,22 @@ text-align:left;
 vertical-align:top;
 }
 
+/* ✅ COLUMN WIDTH CONTROL (ADDED) */
+.asset-table th:nth-child(1),
+.asset-table td:nth-child(1){ width:15%; }
+
+.asset-table th:nth-child(2),
+.asset-table td:nth-child(2){ width:15%; }
+
+.asset-table th:nth-child(3),
+.asset-table td:nth-child(3){ width:15%; }
+
+.asset-table th:nth-child(4),
+.asset-table td:nth-child(4){ width:40%; } /* DESCRIPTION */
+
+.asset-table th:nth-child(5),
+.asset-table td:nth-child(5){ width:15%; }
+
 .asset-table th{
 text-align:center;
 font-weight:bold;
@@ -148,25 +164,23 @@ body{
 }
 
 @page{
-  /* Most browsers honor `@page size: <paper> landscape` for print orientation. */
   size:legal landscape;
-margin:0.5in;
+  margin:0.5in;
 }
 
+/* ✅ USE FULL PAGE WIDTH */
 .form{
-  /* Override default centering so invoice starts in the upper-left corner. */
   margin:0 !important;
-padding:0.75in;
+  padding:0.75in;
+  width:100%;
 }
 
-/* Print-friendly: force high-contrast black-on-white for table. */
+/* Print-friendly */
 .asset-table{
   border:1px solid #000 !important;
   border-radius:0 !important;
   overflow:hidden !important;
   border-collapse:collapse !important;
-  /* Some browsers don't always print the table border in collapsed mode.
-     Outline gives us a reliable outer box. */
   outline:1px solid #000 !important;
   outline-offset:-1px;
 }
@@ -174,7 +188,7 @@ padding:0.75in;
 .asset-table th,
 .asset-table td{
   color:#000 !important;
-  background:#fff !important; /* browsers may skip background colors */
+  background:#fff !important;
   border:1px solid #000 !important;
 }
 
@@ -190,7 +204,6 @@ padding:0.75in;
   background:#fff !important;
 }
 
-/* Page number indicator using CSS counters (print-only). */
 .page-counter::before{
   content: counter(page);
 }
